@@ -1,23 +1,21 @@
 import { useEffect, useState } from 'react';
 import { SpotifyApi } from '@spotify/web-api-ts-sdk';
+import { Box, Button, Heading, Text } from '@chakra-ui/react';
 
-const CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
+const CLIENT_ID = "7232162788584170a350c869aeeb4a71"; // You'll need to replace this with your Spotify Client ID
 const REDIRECT_URI = 'https://spotify-visualiser-smoky.vercel.app/callback';
 const SCOPES = ['user-read-playback-state', 'user-read-currently-playing'];
 
-interface SpotifyAuthProps {
-  onAuthenticated: (api: SpotifyApi) => void;
-}
-
-export const SpotifyAuth = ({ onAuthenticated }: SpotifyAuthProps) => {
+export const SpotifyAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [spotifyApi, setSpotifyApi] = useState<SpotifyApi | null>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get('code');
 
     if (code) {
+      // Handle the callback
       handleCallback(code);
     }
   }, []);
@@ -28,33 +26,23 @@ export const SpotifyAuth = ({ onAuthenticated }: SpotifyAuthProps) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': 'Basic ' + btoa(CLIENT_ID + ':' + import.meta.env.VITE_SPOTIFY_CLIENT_SECRET),
         },
         body: new URLSearchParams({
           grant_type: 'authorization_code',
           code,
           redirect_uri: REDIRECT_URI,
+          client_id: CLIENT_ID,
         }),
       });
-  
-      if (!response.ok) {
-        throw new Error('Failed to authenticate with Spotify');
-      }
-  
+
       const data = await response.json();
-  
-      const api = SpotifyApi.withAccessToken(
-        CLIENT_ID,
-        data.access_token
-      );
-      
-      onAuthenticated(api);
+      const api = SpotifyApi.withAccessToken(CLIENT_ID, data.access_token);
+      setSpotifyApi(api);
       setIsAuthenticated(true);
     } catch (error) {
       console.error('Error during authentication:', error);
-      setError('Failed to authenticate with Spotify. Please try again.');
     }
-  };  
+  };
 
   const handleLogin = () => {
     const authUrl = `https://accounts.spotify.com/authorize?${new URLSearchParams({
@@ -67,23 +55,15 @@ export const SpotifyAuth = ({ onAuthenticated }: SpotifyAuthProps) => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-8">
-      <h1 className="text-3xl font-bold mb-8">Spotify Visualizer</h1>
-      {error && (
-        <p className="text-red-500 mb-4">
-          {error}
-        </p>
-      )}
+    <Box p={8} textAlign="center">
+      <Heading mb={4}>Spotify Visualizer</Heading>
       {!isAuthenticated ? (
-        <button
-          onClick={handleLogin}
-          className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
-        >
+        <Button colorScheme="green" onClick={handleLogin}>
           Connect with Spotify
-        </button>
+        </Button>
       ) : (
-        <p>Successfully authenticated with Spotify!</p>
+        <Text>Successfully authenticated with Spotify!</Text>
       )}
-    </div>
+    </Box>
   );
 }; 
