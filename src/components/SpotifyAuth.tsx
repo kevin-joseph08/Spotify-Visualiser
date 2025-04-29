@@ -44,7 +44,7 @@ export const SpotifyAuth = ({ onAuthenticated }: SpotifyAuthProps) => {
       const data = await response.json();
   
       const api = SpotifyApi.withAccessToken(
-        { clientId: CLIENT_ID },
+        CLIENT_ID,
         data.access_token
       );
       
