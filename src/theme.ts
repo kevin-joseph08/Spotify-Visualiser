@@ -1,4 +1,4 @@
-import { theme as baseTheme } from '@chakra-ui/react'
+import { Theme as baseTheme } from '@chakra-ui/react'
 
 export const theme = {
   ...baseTheme,
