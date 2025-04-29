@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { SpotifyApi } from '@spotify/web-api-ts-sdk';
 
 const CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
-const REDIRECT_URI = 'http://127.0.0.1:5173/callback';
+const REDIRECT_URI = 'https://spotify-visualiser-smoky.vercel.app/callback';
 const SCOPES = ['user-read-playback-state', 'user-read-currently-playing'];
 
 interface SpotifyAuthProps {

@@ -18,11 +18,17 @@ function App() {
       const checkPlayback = async () => {
         try {
           const playback = await spotifyApi.player.getPlaybackState();
-          if (playback.item && 'name' in playback.item) {
+          if (playback.item && 'artists' in playback.item) {
+            const item = playback.item as {
+              name: string;
+              artists: { name: string }[];
+              preview_url: string | null;
+            };
+            
             setCurrentTrack({
-              name: playback.item.name,
-              artist: playback.item.artists[0].name,
-              previewUrl: playback.item.preview_url || '',
+              name: item.name,
+              artist: item.artists[0].name,
+              previewUrl: item.preview_url || '',
             });
             setIsPlaying(playback.is_playing);
           }
