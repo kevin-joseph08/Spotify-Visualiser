@@ -36,20 +36,21 @@ export const SpotifyAuth = ({ onAuthenticated }: SpotifyAuthProps) => {
           redirect_uri: REDIRECT_URI,
         }),
       });
-
+  
       if (!response.ok) {
         throw new Error('Failed to authenticate with Spotify');
       }
-
+  
       const data = await response.json();
-      const api = SpotifyApi.withAccessToken(CLIENT_ID, data.access_token);
+  
+      const api = SpotifyApi.withAccessToken(data.access_token, data.expires_in);
       onAuthenticated(api);
       setIsAuthenticated(true);
     } catch (error) {
       console.error('Error during authentication:', error);
       setError('Failed to authenticate with Spotify. Please try again.');
     }
-  };
+  };  
 
   const handleLogin = () => {
     const authUrl = `https://accounts.spotify.com/authorize?${new URLSearchParams({
